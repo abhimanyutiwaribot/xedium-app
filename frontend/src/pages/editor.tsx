@@ -18,7 +18,6 @@ export default function Editor() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [autoSaving, setAutoSaving] = useState(false);
   const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
 
   const handleEditorChange = useCallback((data: any) => {
@@ -42,20 +41,6 @@ export default function Editor() {
       .finally(() => setLoading(false));
   }, [id, isEditMode, hasLoadedInitialData]);
 
-  // Auto-save logic
-  useEffect(() => {
-    // If we're editing but haven't fetched the initial data yet, don't auto-save
-    if (isEditMode && !hasLoadedInitialData) return;
-
-    // Don't auto-save if we don't have enough content to create a draft
-    if (!content || !title || title.trim() === "") return;
-
-    const timer = setTimeout(() => {
-      saveDraft(true); // Silent save
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, [content, title, isEditMode, hasLoadedInitialData]);
 
   async function saveDraft(isAutoSave = false) {
     if (!title || !content) {
@@ -63,8 +48,7 @@ export default function Editor() {
       return;
     }
 
-    if (isAutoSave) setAutoSaving(true);
-    else setSaving(true);
+    setSaving(true);
 
     const markdown = editorJsToMarkdown(content);
 
@@ -75,15 +59,14 @@ export default function Editor() {
           body: JSON.stringify({
             title,
             content_markdown: markdown,
-            content_json: content,
-            is_autosave: isAutoSave
+            content_json: content
           }),
         });
 
         setLastSaved(new Date());
-        if (!isAutoSave) toast.success("Version saved successfully");
+        toast.success("Version saved successfully");
       } else {
-        // Handle New Draft (Auto or Manual)
+        // Handle New Draft
         const res = await apifetch("/q/article", {
           method: "POST",
           body: JSON.stringify({
@@ -98,18 +81,15 @@ export default function Editor() {
         setCurrentVersion(1);
         setLastSaved(new Date());
 
-        if (!isAutoSave) {
-          toast.success("New draft created");
-        }
+        toast.success("New draft created");
 
         // Once created, we move to the edit URL silently
         navigate(`/editor/${res.id}`, { replace: true });
       }
     } catch (error) {
-      if (!isAutoSave) toast.error("Failed to save draft");
+      toast.error("Failed to save draft");
     } finally {
-      if (isAutoSave) setAutoSaving(false);
-      else setSaving(false);
+      setSaving(false);
     }
   }
 
@@ -158,23 +138,6 @@ export default function Editor() {
           </div>
 
           <div className="flex items-center gap-2 md:gap-3">
-            {/* Auto-save Status */}
-            {(autoSaving || lastSaved) && isEditMode && (
-              <div className="hidden lg:flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground transition-all">
-                <div className={`w-1.5 h-1.5 rounded-full ${autoSaving ? "bg-amber-400 animate-pulse" : "bg-emerald-500"}`} />
-                {autoSaving ? (
-                  "Saving..."
-                ) : (
-                  <span>
-                    Saved {lastSaved && (
-                      new Date().getTime() - lastSaved.getTime() < 60000
-                        ? "just now"
-                        : `${Math.floor((new Date().getTime() - lastSaved.getTime()) / 60000)}m ago`
-                    )}
-                  </span>
-                )}
-              </div>
-            )}
 
             <button
               onClick={() => saveDraft(false)}

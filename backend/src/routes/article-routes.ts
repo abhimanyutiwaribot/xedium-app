@@ -87,8 +87,7 @@ article.put("/edit/:id", async (c) => {
     userId,
     body.title,
     body.content_markdown,
-    body.content_json,
-    body.is_autosave === true
+    body.content_json
   )
 
   return c.json(result);

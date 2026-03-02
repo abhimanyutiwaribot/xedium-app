@@ -7,8 +7,7 @@ export async function editArticle(
   userId: string,
   title: string,
   content_markdown: string,
-  content_json: any,
-  autoSave: boolean = false
+  content_json: any
 ) {
   const article = await articleOwnership(
     prisma,
@@ -24,50 +23,46 @@ export async function editArticle(
   const nextVersion = article.current_version + 1;
 
   return await prisma.$transaction(async (tx) => {
-    // 1. Update the Article's draft content (always done)
+    // 1. Update the Article's draft content and increment version
     await tx.article.update({
       where: { id: articleId },
       data: {
         draft_title: title,
         draft_content_json: content_json,
         draft_content_markdown: content_markdown,
-        // If it's a manual save, also increment the version
-        ...(autoSave ? {} : { current_version: nextVersion })
+        current_version: nextVersion
       }
     });
 
-    // 2. If it's a manual save, create a NEW version record (snapshot)
-    if (!autoSave) {
-      await tx.articleVersion.create({
-        data: {
-          articleId,
-          version: nextVersion,
-          title,
-          content: content_markdown,
-          content_json,
-          wordCount,
-        }
-      });
+    // 2. Create a NEW version record (snapshot)
+    await tx.articleVersion.create({
+      data: {
+        articleId,
+        version: nextVersion,
+        title,
+        content: content_markdown,
+        content_json,
+        wordCount,
+      }
+    });
 
-      // Log the version creation event
-      await tx.events.create({
-        data: {
-          userId: article.authorId,
-          type: "ARTICLE_VERSION_CREATED",
-          payload: {
-            articleId,
-            version: nextVersion
-          }
+    // Log the version creation event
+    await tx.events.create({
+      data: {
+        userId: article.authorId,
+        type: "ARTICLE_VERSION_CREATED",
+        payload: {
+          articleId,
+          version: nextVersion
         }
-      });
-    }
+      }
+    });
 
     return {
       articleId,
-      version: autoSave ? article.current_version : nextVersion,
+      version: nextVersion,
       updatedAt: new Date(),
       wordCount,
-      isAutoSave: autoSave
     }
   });
 }
