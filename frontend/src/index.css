@@ -510,6 +510,11 @@ body {
     background-color: black;
     color: white;
     font-family: 'Inter', sans-serif;
+    @apply no-scrollbar;
+  }
+
+  html {
+    @apply no-scrollbar;
   }
 
   /* Editorial Typography Improvements */

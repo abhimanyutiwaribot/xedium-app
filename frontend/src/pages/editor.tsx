@@ -118,7 +118,7 @@ export default function Editor() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent animate-in fade-in duration-1000">
+    <div className="min-h-screen bg-transparent animate-in fade-in duration-1000 no-scrollbar">
       {/* Editor Header / Tooling */}
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="max-w-5xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">

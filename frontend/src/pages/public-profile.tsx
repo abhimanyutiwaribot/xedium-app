@@ -69,7 +69,7 @@ export default function PublicProfile() {
   if (!profile) return <div className="p-20 text-center text-muted-foreground font-medium">User not found</div>;
 
   return (
-    <div className="min-h-screen bg-transparent animate-in fade-in duration-700">
+    <div className="min-h-screen bg-transparent animate-in fade-in duration-700 no-scrollbar">
       <div className="max-w-4xl mx-auto px-4 md:px-6 py-10 md:py-24">
         {/* Profile Header Area */}
         <div className="flex flex-col md:flex-row gap-8 md:gap-10 items-center md:items-end justify-between mb-12 md:mb-20 pb-12 md:pb-16 border-b border-border text-center md:text-left">

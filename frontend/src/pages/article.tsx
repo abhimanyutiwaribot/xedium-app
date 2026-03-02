@@ -81,7 +81,7 @@ export default function Article() {
         </div>
       )}
 
-      <div className={`min-h-screen relative ${selectedTheme ? "" : "bg-background"} ${selectedTheme?.overlay === "dark" ? "dark" : ""}`}>
+      <div className={`min-h-screen relative no-scrollbar ${selectedTheme ? "" : "bg-background"} ${selectedTheme?.overlay === "dark" ? "dark" : ""}`}>
         <main
           className="max-w-3xl mx-auto px-6 py-12 md:py-24 animate-in fade-in slide-in-from-bottom-4 duration-1000"
           style={{ color: selectedTheme?.color || (selectedTheme && selectedTheme.overlay === "light" ? "#333333" : "#ffffff") }}

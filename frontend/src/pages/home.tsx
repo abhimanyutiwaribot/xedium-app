@@ -45,7 +45,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent px-6 py-12 md:py-20 animate-in fade-in duration-700">
+    <div className="min-h-screen bg-transparent px-6 py-12 md:py-20 animate-in fade-in duration-700 no-scrollbar">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-2 mb-12">
           <div className="w-1 h-3 bg-foreground" />

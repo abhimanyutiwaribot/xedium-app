@@ -6,7 +6,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider defaultOpen={false}>
-      <div className="min-h-screen w-full bg-background transition-clean">
+      <div className="min-h-screen w-full bg-background transition-clean no-scrollbar">
         <AppSidebar />
         <main className="relative w-full">
           <Navbar />
